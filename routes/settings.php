@@ -1,18 +1,16 @@
 <?php
 
+use App\Http\Controllers\Settings\EmailConfigurationController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('settings', '/settings/profile');
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
-});
-
-Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('settings/security', [SecurityController::class, 'edit'])
@@ -24,6 +22,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user-password.update');
 
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
+
+    Route::get('settings/email-configuration', [EmailConfigurationController::class, 'edit'])->name('email-configuration.edit');
+    Route::patch('settings/email-configuration', [EmailConfigurationController::class, 'update'])->name('email-configuration.update');
+    Route::post('settings/email-configuration/test-smtp', [EmailConfigurationController::class, 'testSmtp'])->name('email-configuration.test-smtp');
+    Route::post('settings/email-configuration/test-imap', [EmailConfigurationController::class, 'testImap'])->name('email-configuration.test-imap');
 });
 
 Route::get('.well-known/passkey-endpoints', function () {
