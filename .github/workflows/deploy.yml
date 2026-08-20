@@ -35,5 +35,14 @@ jobs:
       - name: Build assets
         run: npm run build
 
+      - name: Clear application cache
+        run: sudo php artisan optimize:clear
+
+      - name: Restart Valet
+        run: valet restart
+
+      - name: Restart Nginx
+        run: sudo systemctl restart nginx
+
       - name: Verify site endpoint
         run: curl -Iv larable-platform.test
