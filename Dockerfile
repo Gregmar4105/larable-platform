@@ -1,17 +1,33 @@
-# Stage 1: Build frontend assets using Node
-FROM node:22-alpine AS assets-builder
+# Stage 1: Build frontend assets (requires PHP for @laravel/vite-plugin-wayfinder)
+FROM php:8.4-fpm-alpine AS assets-builder
+
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+RUN apk add --no-cache nodejs npm git
+
+# Install required PHP extensions for Artisan / Wayfinder to boot
+RUN install-php-extensions pdo_sqlite pdo_mysql bcmath zip gd intl mbstring
+
 WORKDIR /app
 
-COPY package*.json vite.config.ts tsconfig.json ./
+# Copy dependency definition files
+COPY package*.json composer.json composer.lock ./
+
+# Install Composer dependencies (required for artisan wayfinder:generate)
+RUN composer install --no-dev --no-scripts --no-interaction
+
+# Copy full application code
+COPY . .
+
+# Dump autoloader so Laravel artisan command boots cleanly
+RUN composer dump-autoload --optimize
+
+# Install NPM packages and build assets
 RUN npm ci
-
-COPY resources/ ./resources/
-COPY public/ ./public/
-COPY components.json ./components.json
-
 RUN npm run build
 
-# Stage 2: PHP Application Runtime
+# Stage 2: Production Application Runtime
 FROM php:8.4-fpm-alpine AS app
 
 # Install system dependencies & PHP extensions helper
