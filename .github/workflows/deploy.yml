@@ -28,6 +28,9 @@ jobs:
       - name: Update Composer dependencies
         run: sudo composer update
 
+      - name: Run database migrations
+        run: sudo php artisan migrate --force
+
       - name: Install Node dependencies
         run: sudo npm install
 
