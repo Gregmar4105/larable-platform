@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Fetch latest code
+        run: sudo git fetch origin
+
+      - name: Reset to main
+        run: sudo git reset --hard origin/main
+
+      - name: Install Composer dependencies
+        run: sudo composer install
+
+      - name: Update Composer dependencies
+        run: sudo composer update
+
+      - name: Install Node dependencies
+        run: sudo npm install
+
+      - name: Build assets
+        run: sudo npm run build
+
+      - name: Verify site endpoint
+        run: sudo curl -Iv larable-platform.test
