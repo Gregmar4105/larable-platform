@@ -1,0 +1,31 @@
+# Render Blueprint Configuration
+# Documentation: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: larable-platform
+    runtime: docker
+    plan: free
+    healthCheckPath: /up
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: RUN_MIGRATIONS
+        value: "true"
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
