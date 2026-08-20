@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import { Moon, Search, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -24,10 +25,17 @@ export function AppSidebarHeader({
     const { auth } = page.props;
     const getInitials = useInitials();
     const { resolvedAppearance, updateAppearance } = useAppearance();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const toggleTheme = () => {
         updateAppearance(resolvedAppearance === 'dark' ? 'light' : 'dark');
     };
+
+    const isDark = mounted ? resolvedAppearance === 'dark' : false;
 
     return (
         <header className="flex h-12 shrink-0 items-center justify-between border-b border-sidebar-border/50 px-6 transition-[width,height] ease-linear md:px-4">
@@ -43,9 +51,9 @@ export function AppSidebarHeader({
                     size="icon"
                     onClick={toggleTheme}
                     className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    title={`Switch to ${resolvedAppearance === 'dark' ? 'light' : 'dark'} mode`}
+                    title={mounted ? `Switch to ${isDark ? 'light' : 'dark'} mode` : 'Toggle theme'}
                 >
-                    {resolvedAppearance === 'dark' ? (
+                    {isDark ? (
                         <Sun className="h-4 w-4" />
                     ) : (
                         <Moon className="h-4 w-4" />
