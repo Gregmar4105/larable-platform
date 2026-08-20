@@ -11,31 +11,34 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Fix directory permissions
+        run: sudo chown -R $USER:$USER .
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Fetch latest code
-        run: sudo git fetch origin
+        run: git fetch origin
 
       - name: Reset to main
-        run: sudo git reset --hard origin/main
+        run: git reset --hard origin/main
 
       - name: Install Composer dependencies
-        run: sudo composer install
+        run: composer install
 
       - name: Update Composer dependencies
-        run: sudo composer update
+        run: composer update
 
       - name: Run database migrations
-        run: sudo php artisan migrate --force
+        run: php artisan migrate --force
 
       - name: Install Node dependencies
-        run: sudo npm install
+        run: npm install
 
       - name: Build assets
-        run: sudo npm run build
+        run: npm run build
 
       - name: Verify site endpoint
-        run: sudo curl -Iv larable-platform.test
+        run: curl -Iv larable-platform.test
